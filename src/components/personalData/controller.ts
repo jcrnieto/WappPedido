@@ -10,10 +10,8 @@ export const createPersonalDataController = async (req: Request, res: Response):
     address,
     city,
     brand_name,
-    opening_hours,
-    location,
   } = req.body;
-
+  console.log('Datos recibidos:', JSON.stringify(req.body, null, 2));
   try {
 
     const slug = brand_name.trim().toLowerCase().replace(/\s+/g, '-'); 
@@ -27,8 +25,6 @@ export const createPersonalDataController = async (req: Request, res: Response):
       address,
       city,
       brand_name,
-      opening_hours,
-      location,
       public_url,
       admin_url
     });

@@ -1,6 +1,6 @@
 import { supabaseAdmin, supabase } from '../../config/supabaseConfig';
-import { SimplifiedUser, LoginResponse } from './type';
-import { PersonalDataResponse } from '../personalData/type';
+import { SimplifiedUser } from './type';
+//import { PersonalDataResponse } from '../personalData/type';
 
 
 export const getUsersAdapter = async () => {
@@ -19,24 +19,40 @@ export const getUsersAdapter = async () => {
   return users;
 };
 
-export const registerAdapter = async (email: string, password: string) : Promise<SimplifiedUser | null> => {
+export const registerAdapter = async (email: string) : Promise<SimplifiedUser | null> => {
   
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
-      password,
+      email_confirm: true
       
     });
 
-    // console.log('registerAdapter → Supabase response:', { data, error });
-
     if (error || !data.user) return null;
 
+     const user = data.user;
+
+    // Crear también en tu tabla personalizada
+    const { error: insertError } = await supabaseAdmin
+      .from('users_wapppedidos')
+      .insert({
+        id: user.id, // UUID de autenticación
+        email: user.email,
+        created_at: user.created_at,
+        profile_completed: false
+      });
+
+    if (insertError) {
+      console.error('❌ Error al crear usuario en tabla users:', insertError);
+      return null;
+    }
+
     return {
-        id: data.user.id,
-        email: data.user.email!,
-        created_at: data.user.created_at!,
+        id: user.id,
+        email: user.email!,
+        created_at: user.created_at!,
+        personalData: null
     };
-    //return await supabase.auth.signUp({ email, password });
+    
 };
 
 export const loginAdapter = async (email: string, password: string): Promise<SimplifiedUser | null> => {
@@ -48,13 +64,14 @@ export const loginAdapter = async (email: string, password: string): Promise<Sim
     id: data.user.id,
     email: data.user.email!,
     created_at: data.user.created_at!,
+    personalData: null
   };
   //return await supabase.auth.signInWithPassword({ email, password });
 };
 
 export const getPersonalDataByUserAdapter = async (id: string): Promise<{ data: any | null; error: Error | null }> => {
   const { data: personalData, error: personalError } = await supabaseAdmin
-    .from('personaldata')
+    .from('personal_data')
     .select('*')
     .eq('id', id)
     .single();
@@ -79,4 +96,26 @@ export const getPersonalDataByUserAdapter = async (id: string): Promise<{ data: 
   };
 
   return { data: combined, error: null };
+};
+
+export const getUserByEmailAdapter = async (email: string): Promise<SimplifiedUser | null> => {
+  const { data, error } = await supabaseAdmin
+    .from('users_wapppedidos')
+    .select('*, personal_data(*)')
+    .eq('email', email)
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) {
+    console.error('❌ Error al buscar usuario en users_wapppedidos:', error);
+    return null;
+  }
+
+  return {
+    id: data.id,
+    email: data.email,
+    created_at: data.created_at,
+    profile_completed: data.profile_completed,
+    personalData: data.personal_data || {}, 
+  };
 };

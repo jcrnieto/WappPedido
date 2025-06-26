@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { registerAdapter, loginAdapter, getUsersAdapter, getPersonalDataByUserAdapter } from './adapter';
+import { registerAdapter, loginAdapter, getUsersAdapter, getPersonalDataByUserAdapter, getUserByEmailAdapter } from './adapter';
+
 
 export const getUsersController = async (req: Request, res: Response) => {
   try {
@@ -11,11 +12,10 @@ export const getUsersController = async (req: Request, res: Response) => {
 };
 
 export const registerUserController = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
-
+  
   try {
     const email = req.body.email?.trim().toLowerCase();
-    const password = req.body.password;
+    // const password = req.body.password;
 
     console.log('Email recibido:', JSON.stringify(email));
 
@@ -25,12 +25,7 @@ export const registerUserController = async (req: Request, res: Response): Promi
       return;
     }
 
-    if (!password || password.length < 6) {
-      res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
-      return;
-    }
-
-    const user = await registerAdapter(email, password);
+    const user = await registerAdapter(email);
 
     if (!user) {
       res.status(400).json({ error: 'Registro fallido' });
@@ -82,3 +77,24 @@ export const getPersonalDataByUserController = async (req: Request, res: Respons
   }
 };
 
+export const getUserByEmailController = async (req: Request, res: Response): Promise<void> => {
+  const email = req.params.email?.trim().toLowerCase();
+
+  if (!email) {
+    res.status(400).json({ error: 'Email es requerido' });
+    return;
+  }
+
+  try {
+    const user = await getUserByEmailAdapter(email);
+
+    if (!user) {
+      res.status(404).json({ error: 'Usuario no encontrado' });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al buscar el usuario por email' });
+  }
+};
