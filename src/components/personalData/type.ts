@@ -1,5 +1,5 @@
 export interface PersonalDataInput {
-  id: string;
+  user_id: string;
   full_name: string;
   phone: string;
   address: string;
@@ -7,6 +7,7 @@ export interface PersonalDataInput {
   brand_name: string;
   public_url: string;
   admin_url: string;
+  auth_user_id:string,
 }
 
 export interface PersonalDataResponse {
@@ -19,4 +20,15 @@ export interface PersonalDataResponse {
   public_url: string;
   admin_url: string;
   created_at: string;
+  user_id: string;
+  auth_user_id:string,
+}
+
+ export interface UpdatePersonalDataInput {
+  id: string;
+  full_name: string;
+  phone: string;
+  address: string;
+  city: string;
+  brand_name: string;
 }
