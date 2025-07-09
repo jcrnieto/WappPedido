@@ -1,6 +1,7 @@
 import morgan from 'morgan';
 import express, { Request, Response } from 'express';
-const cors = require('cors');
+// const cors = require('cors');
+import cors, { CorsOptions } from 'cors';
 import userRoutes from './components/users/route';
 import personalDataRoutes from './components/personalData/route';
 import businessHoursRoutes from './components/businessHours/route';
@@ -17,11 +18,20 @@ const allowedOrigins = [
 ];
 
 app.use(express.json());
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use('/api/users', userRoutes);
