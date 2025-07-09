@@ -1,5 +1,5 @@
 import morgan from 'morgan';
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors, { CorsOptions } from 'cors';
 
 import userRoutes from './components/users/route';
@@ -29,6 +29,33 @@ const corsOptions: CorsOptions = {
   credentials: true
 };
 
+const customCors = (req: Request, res: Response, next: NextFunction) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://w-app-pedido-frontend.vercel.app',
+  ];
+
+  const origin = req.headers.origin ;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  next();
+};
+
+app.use(customCors);
 app.use(cors(corsOptions));
 
 app.use(express.json());
