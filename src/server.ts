@@ -1,7 +1,7 @@
 import morgan from 'morgan';
 import express, { Request, Response, NextFunction } from 'express';
-// import cors, { CorsOptions } from 'cors';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
+// import cors from 'cors';
 import userRoutes from './components/users/route';
 import personalDataRoutes from './components/personalData/route';
 import businessHoursRoutes from './components/businessHours/route';
@@ -13,51 +13,51 @@ const app = express();
 const PORT = 3000;
 
 app.use(cors());
-// const allowedOrigins = [
-//   'http://localhost:5173',
-//   'https://w-app-pedido-frontend.vercel.app'
-// ];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://w-app-pedido-frontend.vercel.app'
+];
 
-// const corsOptions: CorsOptions = {
-//   origin: (origin, callback) => {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   credentials: true
-// };
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+};
 
-// const customCors = (req: Request, res: Response, next: NextFunction) => {
-//   const allowedOrigins = [
-//     'http://localhost:5173',
-//     'https://w-app-pedido-frontend.vercel.app',
-//   ];
+const customCors = (req: Request, res: Response, next: NextFunction) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://w-app-pedido-frontend.vercel.app',
+  ];
 
-//   const origin = req.headers.origin ;
-//   if (origin && allowedOrigins.includes(origin)) {
-//     res.setHeader('Access-Control-Allow-Origin', origin);
-//   }
+  const origin = req.headers.origin ;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
 
-//   res.setHeader('Access-Control-Allow-Credentials', 'true');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-//   );
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
-//   if (req.method === 'OPTIONS') {
-//     res.status(200).end();
-//     return;
-//   }
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-//   next();
-// };
+  next();
+};
 
-// app.use(customCors);
-// app.use(cors(corsOptions));
+app.use(customCors);
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(morgan('dev'));
