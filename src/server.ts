@@ -2,6 +2,11 @@ import morgan from 'morgan';
 import express, { Request, Response, NextFunction } from 'express';
 import cors, { CorsOptions } from 'cors';
 // import cors from 'cors';
+
+import { swaggerOptions } from './docs/swaggerOptions';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+
 import userRoutes from './components/users/route';
 import personalDataRoutes from './components/personalData/route';
 import businessHoursRoutes from './components/businessHours/route';
@@ -11,6 +16,10 @@ import geoLocationRoute from './components/geoLocation/route';
 
 const app = express();
 const PORT = 3000;
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(cors());
 const allowedOrigins = [

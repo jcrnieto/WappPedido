@@ -7,7 +7,7 @@ export const createAdditionalInformationController = async (
   res: Response<ResponseAdditionalInformation | { message: string }>
 ): Promise<void> => {
   try {
-    const { logo_url, whatsapp, social_links, user_id } = req.body;
+    const { logo_url, whatsapp, social_links, user_id, additional_description, brand_information_url } = req.body;
 
     if (!user_id) {
       res.status(400).json({ message: 'El campo user_id es obligatorio.' });
@@ -19,6 +19,8 @@ export const createAdditionalInformationController = async (
       whatsapp,
       social_links,
       user_id,
+      additional_description,
+      brand_information_url
     });
 
     if (error) {
@@ -72,7 +74,7 @@ export const updateAdditionalInformationController = async (
 ): Promise<void> => {
   try {
     const { user_id } = req.params;
-    const { logo_url, whatsapp, social_links } = req.body;
+    const { logo_url, whatsapp, social_links, additional_description, brand_information_url } = req.body;
 
     if (!user_id) {
       res.status(400).json({ message: 'Falta el parámetro user_id' });
@@ -83,6 +85,8 @@ export const updateAdditionalInformationController = async (
       logo_url,
       whatsapp,
       social_links,
+      additional_description,
+      brand_information_url
     });
 
     if (error) {

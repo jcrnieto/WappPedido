@@ -12,6 +12,8 @@ export const createAdditionalInformationAdapter = async (
         whatsapp: info.whatsapp,
         social_links: info.social_links,
         user_id: info.user_id,
+        additional_description: info.additional_description,
+        brand_information_url: info.brand_information_url
       },
     ])
     .select();
@@ -41,6 +43,8 @@ export const updateAdditionalInformationAdapter = async (
       logo_url: info.logo_url,
       whatsapp: info.whatsapp,
       social_links: info.social_links,
+      additional_description: info.additional_description,
+      brand_information_url: info.brand_information_url
     })
     .eq('user_id', user_id)
     .select()

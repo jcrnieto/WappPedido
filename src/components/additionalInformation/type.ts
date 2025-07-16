@@ -4,12 +4,16 @@ export interface ResponseAdditionalInformation {
   logo_url?: string | null; 
   whatsapp?: string | null; 
   social_links?: string[] | null; 
-  user_id: string; 
+  user_id: string;
+  additional_description?: string | null;
+  brand_information_url?: string | null;  
 }
 
 export interface CreateAdditionalInformationInput {
   logo_url?: string | null;
   whatsapp?: string | null;
   social_links?: string[] | null;
-  user_id: string; 
+  user_id: string;
+  additional_description?: string | null;
+  brand_information_url?: string | null; 
 }
