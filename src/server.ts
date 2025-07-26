@@ -1,7 +1,6 @@
 import morgan from 'morgan';
 import express, { Request, Response, NextFunction } from 'express';
-import cors, { CorsOptions } from 'cors';
-// import cors from 'cors';
+import cors from 'cors';
 
 import { swaggerOptions } from './docs/swaggerOptions';
 import swaggerUi from 'swagger-ui-express';
@@ -12,6 +11,7 @@ import personalDataRoutes from './components/personalData/route';
 import businessHoursRoutes from './components/businessHours/route';
 import AdditionalInformation from './components/additionalInformation/route';
 import geoLocationRoute from './components/geoLocation/route';
+import categorieRoute from './components/categorie/route';
 
 
 const app = express();
@@ -22,51 +22,14 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(cors());
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://w-app-pedido-frontend.vercel.app'
-];
-
-const corsOptions: CorsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
-};
-
-const customCors = (req: Request, res: Response, next: NextFunction) => {
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'https://w-app-pedido-frontend.vercel.app',
-  ];
-
-  const origin = req.headers.origin ;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  next();
-};
-
-app.use(customCors);
-app.use(cors(corsOptions));
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
+});
+  
 
 app.use(express.json());
 app.use(morgan('dev'));
@@ -77,6 +40,7 @@ app.use('/api/personalData', personalDataRoutes);
 app.use('/api/businessHours', businessHoursRoutes);
 app.use('/api/additionalInformation', AdditionalInformation);
 app.use('/api/geoLocation', geoLocationRoute);
+app.use('/api/categories', categorieRoute);
 
 
 app.get('/', (req: Request, res: Response) => {
