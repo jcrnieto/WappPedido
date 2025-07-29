@@ -17,6 +17,8 @@ import categorieRoute from './components/categorie/route';
 const app = express();
 const PORT = 3000;
 
+console.log('Todas las variables:', process.env);
+
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
