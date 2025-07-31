@@ -1,5 +1,5 @@
 import morgan from 'morgan';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 
 import { swaggerOptions } from './docs/swaggerOptions';
@@ -17,7 +17,7 @@ import categorieRoute from './components/categorie/route';
 const app = express();
 const PORT = 3000;
 
-console.log('Todas las variables:', process.env);
+//console.log('Todas las variables:', process.env);
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
