@@ -1,5 +1,10 @@
 import { Request, Response } from 'express';
-import { createAdditionalInformationAdapter, getAdditionalInformationByUserAdapter, updateAdditionalInformationAdapter } from './adapter';
+import { createAdditionalInformationAdapter, 
+  getAdditionalInformationByUserAdapter, 
+  updateAdditionalInformationAdapter,
+  removeLogoAdapter,
+  removeBrandAdapter 
+} from './adapter';
 import { CreateAdditionalInformationInput, ResponseAdditionalInformation } from './type';
 
 export const createAdditionalInformationController = async (
@@ -96,6 +101,84 @@ export const updateAdditionalInformationController = async (
     }
 
     res.status(200).json(data || { message: 'Información actualizada correctamente.' });
+  } catch (err) {
+    console.error('❌ Error inesperado:', err);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+};
+
+export const removeLogoController = async (req: Request, res: Response): Promise<void> => {
+  const { user_id } = req.params;
+
+  if (!user_id) {
+    res.status(400).json({ message: 'Falta el parámetro user_id' });
+    return;
+  }
+
+  try {
+    // 1. Obtener la información actual
+    const { data, error } = await getAdditionalInformationByUserAdapter(user_id);
+
+    if (error) {
+      console.error('❌ Error buscando información adicional:', error);
+      res.status(500).json({ message: 'Error buscando información adicional' });
+      return;
+    }
+
+    if (!data?.logo_url) {
+      res.status(404).json({ message: 'No existe logo para eliminar' });
+      return;
+    }
+
+    // 2. Llamar al adapter que borra del storage y actualiza la BD
+    const { success, error: deleteError } = await removeLogoAdapter(data.logo_url, user_id);
+
+    if (deleteError || !success) {
+      console.error('❌ Error al eliminar logo:', deleteError);
+      res.status(500).json({ message: 'Error al eliminar el logo' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Logo eliminado correctamente' });
+  } catch (err) {
+    console.error('❌ Error inesperado:', err);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+};
+
+export const removeBrandController = async (req: Request, res: Response): Promise<void> => {
+  const { user_id } = req.params;
+
+  if (!user_id) {
+    res.status(400).json({ message: 'Falta el parámetro user_id' });
+    return;
+  }
+
+  try {
+    // 1. Obtener la información actual
+    const { data, error } = await getAdditionalInformationByUserAdapter(user_id);
+
+    if (error) {
+      console.error('❌ Error buscando información adicional:', error);
+      res.status(500).json({ message: 'Error buscando información adicional' });
+      return;
+    }
+
+    if (!data?.brand_information_url) {
+      res.status(404).json({ message: 'No existe foto de informacion para eliminar' });
+      return;
+    }
+
+    // 2. Llamar al adapter que borra del storage y actualiza la BD
+    const { success, error: deleteError } = await removeBrandAdapter(data.brand_information_url, user_id);
+
+    if (deleteError || !success) {
+      console.error('❌ Error al eliminar foto de informacion:', deleteError);
+      res.status(500).json({ message: 'Error al eliminar foto' });
+      return;
+    }
+
+    res.status(200).json({ message: 'foto de informacion eliminado correctamente' });
   } catch (err) {
     console.error('❌ Error inesperado:', err);
     res.status(500).json({ message: 'Error del servidor' });
