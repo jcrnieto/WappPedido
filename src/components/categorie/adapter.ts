@@ -74,6 +74,34 @@ export const deleteCategoryAdapter = async (
   categoryId: string
 ): Promise<{ data: any; error: string | null }> => {
   try {
+    // 1. Obtener la categoría para leer la URL de la imagen
+    const { data: category, error: fetchError } = await supabaseAdmin
+      .from('categories_wapppedidos')
+      .select('image_url')
+      .eq('id', categoryId)
+      .single();
+
+    if (fetchError) {
+      console.error('❌ Error obteniendo categoría antes de eliminar:', fetchError.message);
+      return { data: null, error: fetchError.message };
+    }
+
+    // 2. Si existe imagen, eliminarla del storage
+    if (category?.image_url) {
+      const publicIndex = category.image_url.indexOf('/object/public/');
+      if (publicIndex !== -1) {
+        const path = category.image_url.substring(publicIndex + '/object/public/'.length); // bucket/file.png
+        const [bucket, ...filePathParts] = path.split('/');
+        const filePath = filePathParts.join('/');
+
+        const { error: storageError } = await supabaseAdmin.storage.from(bucket).remove([filePath]);
+        if (storageError) {
+          console.error('❌ Error eliminando imagen del storage:', storageError.message);
+        }
+      }
+    }
+
+    // 3. Eliminar la categoría de la tabla
     const { data, error } = await supabaseAdmin
       .from('categories_wapppedidos')
       .delete()
