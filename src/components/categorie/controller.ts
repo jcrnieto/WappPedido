@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
-import { createCategoryAdapter, getAllCategorieByUserAdapter, updateCategoryAdapter, deleteCategoryAdapter } from './adapter';
+import { 
+  createCategoryAdapter, 
+  getAllCategorieByUserAdapter,
+  updateCategoryAdapter, 
+  deleteCategoryAdapter,
+  getCategoriesWithProductsAdapter 
+} from './adapter';
 
 export const createCategoryController = async (req: Request, res: Response): Promise<void> => {
   const { name, image_url, user_id } = req.body;
@@ -81,3 +87,27 @@ export const deleteCategoryController = async (req: Request, res: Response): Pro
 
   res.status(200).json({ message: 'Categoría eliminada con éxito', deleted: data });
 };
+
+export const getCategoriesWithProductsController = async (
+  req: Request<{ userId: string }>,
+  res: Response
+): Promise<void> => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    res.status(400).json({ message: 'ID de usuario requerido' });
+    return;
+  }
+
+  const { data, error } = await getCategoriesWithProductsAdapter(userId);
+
+  if (error) {
+    console.error('❌ Error al obtener categorías con productos:', error);
+    res.status(500).json({ message: 'Error al obtener categorías con productos' });
+    return;
+  }
+
+  res.status(200).json(data);
+};
+
+

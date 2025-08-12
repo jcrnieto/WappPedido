@@ -12,6 +12,7 @@ import businessHoursRoutes from './components/businessHours/route';
 import AdditionalInformation from './components/additionalInformation/route';
 import geoLocationRoute from './components/geoLocation/route';
 import categorieRoute from './components/categorie/route';
+import productRoute from './components/products/route'; 
 
 
 const app = express();
@@ -43,6 +44,7 @@ app.use('/api/businessHours', businessHoursRoutes);
 app.use('/api/additionalInformation', AdditionalInformation);
 app.use('/api/geoLocation', geoLocationRoute);
 app.use('/api/categories', categorieRoute);
+app.use('/api/products', productRoute);
 
 
 app.get('/', (req: Request, res: Response) => {

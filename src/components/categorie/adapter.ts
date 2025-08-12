@@ -119,3 +119,21 @@ export const deleteCategoryAdapter = async (
     return { data: null, error: 'Error inesperado eliminando categoría' };
   }
 };
+
+export const getCategoriesWithProductsAdapter = async (
+  userId: string
+): Promise<{ data: any[]; error: any }> => {
+  const { data, error } = await supabaseAdmin
+    .from('categories_wapppedidos')
+    .select(`
+      *,
+      products_wapppedidos(*)
+    `)
+    .eq('user_id', userId); 
+
+  if (error) {
+    console.error('❌ Supabase select error:', error);
+  }
+
+  return { data: data || [], error };
+};
