@@ -5,7 +5,8 @@ import {
     deleteProductController,
     getProductByCategoryIdController,
     getProductsWithoutCategoryController,
-    updateProductController
+    updateProductController,
+    getProductByIdController
 } from './controller';
 
 const router = Router();
@@ -16,5 +17,6 @@ router.get('/getAllProductByCategoryId/:categoryId', getProductByCategoryIdContr
 router.delete('/deleteProduct/:productId', deleteProductController);
 router.get('/no-category', getProductsWithoutCategoryController);
 router.patch('/updateProduct/:id', updateProductController);
+router.get('/getProductById/:userId/:productId', getProductByIdController);
 
 export default router;

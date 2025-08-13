@@ -5,7 +5,8 @@ import {
   deleteProductAdapter, 
   getProductByCategoryIdAdapter,
   getProductsWithoutCategoryAdapter,
-  updateProductAdapter
+  updateProductAdapter,
+  getProductByIdAdapter
 } from './adapter';
 import { CreateProductInput } from './type';
 
@@ -152,6 +153,33 @@ export const updateProductController = async (req: Request, res: Response): Prom
   }
 
   res.status(200).json({ updated: data });
+};
+
+export const getProductByIdController = async (
+  req: Request<{ userId: string; productId: string }>,
+  res: Response
+): Promise<void> => {
+  const { userId, productId } = req.params;
+
+  if (!userId || !productId) {
+    res.status(400).json({ message: 'Faltan parámetros requeridos' });
+    return;
+  }
+
+  const { data, error } = await getProductByIdAdapter(userId, productId); 
+
+  if (error) {
+    console.error('❌ Error al obtener producto:', error);
+    res.status(500).json({ message: 'Error al obtener producto' });
+    return;
+  }
+
+  if (!data) {
+    res.status(404).json({ message: 'Producto no encontrado' });
+    return;
+  }
+
+  res.status(200).json(data);
 };
 
 

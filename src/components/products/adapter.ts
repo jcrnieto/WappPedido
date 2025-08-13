@@ -144,3 +144,21 @@ export const updateProductAdapter = async (
 
   return { data, error: null };
 };
+
+export const getProductByIdAdapter = async (
+  userId: string,
+  productId: string
+): Promise<{ data: any | null; error: any }> => {
+  const { data, error } = await supabaseAdmin
+    .from('products_wapppedidos')
+    .select('*')
+    .eq('id', productId)
+    .eq('user_id', userId) 
+    .single(); 
+
+  if (error) {
+    console.error('❌ Supabase select error:', error);
+  }
+
+  return { data, error };
+};
