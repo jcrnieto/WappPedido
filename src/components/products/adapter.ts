@@ -162,3 +162,40 @@ export const getProductByIdAdapter = async (
 
   return { data, error };
 };
+
+export const getProductByNameAdapter = async (
+  userId: string,
+  searchName: string
+): Promise<{ data: any | null; error: any }> => {
+  const { data, error } = await supabaseAdmin
+    .from('products_wapppedidos')
+    .select('*')
+    .eq('user_id', userId) 
+    
+  if (error) {
+    console.error('❌ Supabase select error:', error);
+    return { data: null, error };
+  }
+
+  const filtered = data?.filter((p) =>
+    p.name.toLowerCase().includes(searchName.toLowerCase())
+  )|| [];
+
+  return { data: filtered, error: null };
+};
+
+export const getAllProductByIdCategoryIsNullAdapter = async (
+    userId: string
+): Promise<{ data: ProductResponse[] | null; error: any }> => {
+  const { data, error } = await supabaseAdmin
+    .from('products_wapppedidos')
+    .select('*')
+    .eq('user_id', userId)
+    .is('category_id', null);
+
+  if (error) {
+    console.error('❌ Supabase select error:', error);
+  }
+
+   return { data: data || [], error };
+};

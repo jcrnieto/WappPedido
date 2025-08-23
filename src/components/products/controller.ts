@@ -6,7 +6,9 @@ import {
   getProductByCategoryIdAdapter,
   getProductsWithoutCategoryAdapter,
   updateProductAdapter,
-  getProductByIdAdapter
+  getProductByIdAdapter,
+  getProductByNameAdapter,
+  getAllProductByIdCategoryIsNullAdapter
 } from './adapter';
 import { CreateProductInput } from './type';
 
@@ -167,6 +169,60 @@ export const getProductByIdController = async (
   }
 
   const { data, error } = await getProductByIdAdapter(userId, productId); 
+
+  if (error) {
+    console.error('❌ Error al obtener producto:', error);
+    res.status(500).json({ message: 'Error al obtener producto' });
+    return;
+  }
+
+  if (!data) {
+    res.status(404).json({ message: 'Producto no encontrado' });
+    return;
+  }
+
+  res.status(200).json(data);
+};
+
+export const getProductByNameController = async (
+  req: Request<{  userId: string, searchName: string }>,
+  res: Response
+): Promise<void> => {
+  const { userId, searchName } = req.params;
+
+  if (!userId || !searchName) {
+    res.status(400).json({ message: 'Faltan parámetros requeridos' });
+    return;
+  }
+
+  const { data, error } = await getProductByNameAdapter(userId, searchName); 
+
+  if (error) {
+    console.error('❌ Error al obtener producto:', error);
+    res.status(500).json({ message: 'Error al obtener producto' });
+    return;
+  }
+
+  if (!data) {
+    res.status(404).json({ message: 'Producto no encontrado' });
+    return;
+  }
+
+  res.status(200).json(data);
+};
+
+export const getAllProductByIdCategoryIsNullController = async (
+  req: Request<{ userId: string }>,
+  res: Response
+): Promise<void> => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    res.status(400).json({ message: 'ID de producto requerido' });
+    return;
+  }
+
+  const { data, error } = await getAllProductByIdCategoryIsNullAdapter(userId); 
 
   if (error) {
     console.error('❌ Error al obtener producto:', error);
